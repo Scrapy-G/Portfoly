@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Ubuntu:wght@300;400;700&display=swap');
+
+:root {
+  --primary: #1EF895;
+  --primary-dark: #28A763;
+  --secondary: #1C252A; 
+  --gray-100: #EFEFEF;
+  --gray-200: #A7AAAB;
+  --gray-300: #545B5E;
+  --gray-500: #2E373C;
+  --gray-700: #1C252A;
+  --red: #df5050;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--gray-700);
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2,
+h3, h4, h5 {
+  font-family: 'Ubuntu', sans-serif;
+  color: var(--gray-700);
+  font-weight: 300;
+}
+
+a {
+  color: var(--primary-dark);
+  text-decoration: none;
+}
+
+.round {
+  border-radius: 30px;
+}
+
+.font-weight-light {
+  font-weight: lighter;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
+/* =========button============= */
+.btn {
+  border: none;
+  outline: none;
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus{
+  background-color: var(--primary);
+  color: var(--gray-700);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  box-shadow: 0 0 5px var(--primary);
+}
+
+.btn-secondary {
+  color: var(--gray-700);
+  border: 2px solid var(--gray-700);
+  background: none;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: var(--gray-700);
+  color: white;
+}
+
+/* end button */
+
+.divider {
+  display: flex;
+  align-items: center;
+  color: var(--gray-200);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  display: inline-block;
+  border-bottom: 1px solid var(--gray-200);
+  height: 0px;
+  flex: auto;
+}
+
+/* =========input============== */
+
+.form-control,
+.form-control:focus {
+  color: var(--gray-700);
+  background: none;
+  border: 1px solid var(--gray-200);
+  /* font-weight: 300; */
+}
+
+input.form-control::placeholder {
+  color: var(--gray-200);
+}
+
+input.form-control:focus {
+  box-shadow: none;
+  border-color:var(--gray-700);
+}
+
+label {
+  font-weight: lighter;
+}
+
+/* =======navigation=========== */
+.nav-dropdown-menu {
+  background-color: var(--gray-500);
+  border-radius: 5px;
+  font-weight: normal;
+}
+
+.nav-dropdown-menu a {
+  color: var(--gray-100);
+  font-weight: normal;
+  display: block;
+  border-bottom: 1px solid var(--gray-300);
+}
+
+.nav-dropdown-menu a div:hover {
+  background-color: var(--gray-300);
+  color: var(--primary);
+}
+
+
+
+/* end navigation */
+.action-section {
+  background-color: var(--gray-100);
+}
+
+/* =======cover image ======== */
+
+.cover-image img,
+.profile-image img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+ 
+.cover-image {
+  height: auto;
+  max-height: 500px;
+  margin: auto;
+  margin-bottom: -70px;
+  max-width: 1400px;
+  overflow: hidden;
+}
+
+.profile-image {
+  height: 140px;
+  width: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid white;
+  position: relative;
+  margin-bottom: 16px;
+}

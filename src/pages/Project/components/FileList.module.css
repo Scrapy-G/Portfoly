@@ -1,0 +1,12 @@
+.filesSection {
+    background-color: var(--gray-100);
+    padding: 24px 0;
+    margin: 24px 0;
+}
+
+.fileName {
+    font-weight: bold;
+    margin-left: 8px;
+    text-transform: capitalize;
+    color: var(--gray-200);
+}

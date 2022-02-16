@@ -1,0 +1,26 @@
+.searchForm label {
+    color: var(--gray-300);
+}
+
+.searchForm input[type="text"] {
+    color: var(--gray-300);
+    font-family: Ubuntu, Inter;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--primary-dark);
+}
+
+.searchForm input[type="text"]:focus,
+.searchForm input[type="text"]:active {
+    outline: none;
+    color: var(--gray-700);
+    border-bottom: 2px solid var(--primary);
+}
+
+.project .imgContainer{
+    background-color: var(--gray-200);
+    height: 250px;
+    border-radius: 10px;
+}
