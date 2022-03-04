@@ -19,8 +19,6 @@ export default function ManageFiles () {
     const projectPath = auth.currentUser.uid + "/" + projectId + "/";
 
     useEffect(() => {
-        //fetch data
-
         const listRef = ref(storage, projectPath);
         listAll(listRef)
             .then(res => {
@@ -66,8 +64,8 @@ export default function ManageFiles () {
             </Container>
             <Container>
                 <Link to={`/projects/${projectId}`}>
-                    <Button variant="secondary" className="w-100 py-3">
-                        Project view
+                    <Button variant="secondary" className="w-100 py-3 mb-3">
+                        Save & View
                     </Button>
                 </Link>
             </Container>

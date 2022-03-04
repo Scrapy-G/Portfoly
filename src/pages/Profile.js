@@ -1,84 +1,104 @@
-import { useState } from 'react';
-import { Container, Button, Row, Col, Form } from 'react-bootstrap';
-import cover from '../assets/cover.png';
+import { useEffect, useState } from 'react';
+import { Container, Button, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import profile from '../assets/profile.png';
-import { Radio } from '../components/Radio';
-import ProjectList from '../components/ProjectList';
-import { useSelector } from 'react-redux';
-import { selectUser } from '../redux/slices/userSlice';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import Header from '../components/Header';
+import { useUsersContext } from '../contexts/UserContext';
+import styles from './Profile.module.css';
+import ProjectTab from './Project/ProjectTab';
+import { db  } from '../firebase';
+import { doc, getDoc } from "firebase/firestore";
+import { BsPerson } from 'react-icons/bs';
+import Loader from '../components/Loader';
 
 export default function Profile() {
 
-  const [ tab, setTab ] = useState("projects");
-  const user = useSelector(selectUser);
+  const [currentProfile, setProfile] = useState();
+  const [loading, setLoading] = useState(false);
 
-  const handleRadioChange = (e) => {
-    setTab(e.target.value);
-  }
-
-  const renderTab = () => {
-    if(tab === "projects"){
-      return (
-        <ProjectList />
-      )
-    }else if(tab === "about"){
-      return (
-        <Col>
-          <p className="about-text">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ipsum suspendisse ultrices gravida dictum fusce ut placerat orci. 
-            Morbi blandit cursus risus at. Rhoncus urna neque viverra justo nec ultrices. 
-            Ultrices tincidunt arcu non sodales neque sodales. Tortor condimentum lacinia 
-            quis vel eros donec ac odio tempor. Tellus orci ac auctor augue.
-          </p>
-        </Col>
-      )
-    }
-  }
+  const params = useParams();
+  const { username } = params;
+  const { loggedInUser } = useUsersContext();
   
+  useEffect(() => {
+    setLoading(true);
+
+    //fetch user info
+    const fetchUser = async() => {
+      const docRef = doc(db, "users", username);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = await docSnap.data();
+        setProfile(data);
+
+      } else {
+        //redirect to user not found
+        console.log("user not found");
+      }
+
+      setLoading(false);
+    } 
+    
+    fetchUser();
+
+  }, [username]);
+
+  if(loading)
+    return <Loader />
+  
+  if(!currentProfile)
+    return <div></div>
+
   return(
     <div>
-      <div className="cover-image">
-        <img src={cover} />
-      </div>
-      <Container>
-        <div className="profile-image">
-          <img src={profile} />
-        </div>
-        <h5 className="font-weight-bold">John Miller</h5>
-        <h3>Creator of breath-taking illustrations</h3>
-
-        <Link to={user ? "/new-project" : "/contact"}>
-          <Button variant="primary" className="round my-2 mr-2">
-            {user ? "New project" : "Contact" }
-          </Button>
-        </Link>
-        {user &&
-          <Link to={user ? "/edit-profile" : "/contact"}>
-            <Button variant="primary" className="round mr-2 my-2 stroke">
-              {user ? "Edit profile" : "Contact" }
-            </Button>
-          </Link>         
-        }
-      
-      </Container>
-      <div className="action-section py-2 my-4">
-        <Container>
-          <Radio 
-            name="section"
-            options={["projects", "about"]}
-            onChange={handleRadioChange}
-          />
-        </Container>
-      </div>
+      <Header />
       <Container>
         <Row>
-          {renderTab()}
+          <Col sm={12} lg={3} className="text-center py-5">
+            <div className={styles.profileImage}>
+              {currentProfile?.imgUrl && 
+                <img src={profile} />
+                ||
+                <BsPerson size={40} />
+              }
+            </div>
+            <h2 className="font-weight-bold mt-4">
+              {currentProfile.name}
+            </h2>
+            <h5 className="mb-3" style={{ fontSize: "18px" }}>
+              {currentProfile?.introduction}
+            </h5>
+
+              { currentProfile.id === loggedInUser?.id &&
+                <Link to="/edit-profile">
+                  <Button variant="secondary" className="small stroke my-4">
+                    Edit profile
+                  </Button>
+                </Link>
+                ||
+                <Link to="contact">
+                  <Button variant="primary" className="small my-4">
+                    Contact
+                  </Button>
+                </Link>
+              }
+              
+          </Col>
+          <Col>
+            <Tabs defaultActiveKey="projects">
+              <Tab eventKey="projects" title="Projects">
+                <ProjectTab userId={currentProfile.id}/>
+              </Tab>
+              <Tab eventKey="about" title="About" >
+                <div className="p-3" style={{ backgroundColor: "white" }}>
+                  <p className="my-3 about-text">{currentProfile?.about}</p>
+                </div>
+              </Tab>
+            </Tabs>
+          </Col>
         </Row>
-      </Container>
-      
+      </Container>      
     </div>
   );
 }

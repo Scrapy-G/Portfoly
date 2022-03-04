@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, setDoc } from 'firebase/firestore';
 import { getStorage, ref } from 'firebase/storage'
 
 const app = initializeApp({
@@ -16,6 +16,5 @@ const db = getFirestore();
 const storage = getStorage();
 export const auth = getAuth();
 export const authStateChanged = onAuthStateChanged;
-// export default app;
 
-export { addDoc, collection, db, storage, ref }
+export { addDoc, collection, db, storage, ref, setDoc }

@@ -3,17 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUser, signOutUser } from "../redux/slices/userSlice";
 import { Link, useNavigate } from 'react-router-dom';
 import { useReducer } from "react";
+import { auth } from '../firebase';
+import { deleteUser } from "firebase/auth";
 
 export default function Header(){
-    
-    const user = useSelector(selectUser);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+
 
     const handleSignOut = () => {
-        dispatch(signOutUser());
-        navigate('/');
-    }
+        auth.signOut();
+}
 
     const DropdownMenu = () => {
 
@@ -21,10 +19,9 @@ export default function Header(){
 
         return (
             <div 
-                className="btn btn-secondary dropdown-toggle position-relative"
+                className="btn  dropdown-toggle position-relative"
                 onClick={setToggle}
             >
-                {user}
                 {toggle && 
                     <div className="nav-dropdown-menu position-absolute top-100 end-0 py-2">
                         <Link to='/' className="text-decoration-none">
@@ -53,9 +50,8 @@ export default function Header(){
                 </Link>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
-                    {user && 
-                        <DropdownMenu />
-                    }
+                
+                    <DropdownMenu />
                 </Navbar.Collapse>
             </Container>
         </Navbar>

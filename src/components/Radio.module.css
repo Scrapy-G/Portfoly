@@ -8,20 +8,19 @@
 }
 
 .radioGroup label {
-  outline: 1px solid var(--gray-200);
+  outline: 2px solid var(--gray-400);
   outline-offset: -1px;
   padding: 8px 16px;
   border-radius: 60px;
   text-transform: capitalize;
-  color: var(--gray-300);
+  color: var(--gray-600);
 }
 
 /* Checked */
 .radioInput:checked + label {
   outline: none;
-  background-color: var(--gray-500);
+  background-color: var(--gray-600);
   color: white;
-  font-weight: bold;
 }
 
 .radioInput:checked + label:before {

@@ -1,4 +1,4 @@
-import { RotateLoader } from 'react-spinners';
+import { BeatLoader } from 'react-spinners';
 
 export default function Loader() {
   return (
@@ -6,7 +6,7 @@ export default function Loader() {
         className="d-flex justify-content-center align-items-center"
         style={{ height: "100vh" }}
     >
-        <RotateLoader/> 
+        <BeatLoader color="var(--secondary)"/> 
     </div>
   )
 }

@@ -1,0 +1,17 @@
+.profileImage {
+    margin: 20px auto;
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gray-300);
+}
+
+.profileImage img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}

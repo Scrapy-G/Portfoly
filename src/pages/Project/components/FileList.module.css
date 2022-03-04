@@ -1,7 +1,7 @@
 .filesSection {
     background-color: var(--gray-100);
     padding: 24px 0;
-    margin: 24px 0;
+    margin-top: 24px;
 }
 
 .fileName {

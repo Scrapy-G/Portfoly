@@ -1,0 +1,26 @@
+.backdrop {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #00000050; 
+}
+
+.link {
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding-left: 16px;
+    display: flex;
+    background-color: var(--gray-100);
+}
+
+.link input {
+    flex: auto;
+    border: none;
+    background: none;
+    text-overflow: ellipsis;
+}

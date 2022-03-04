@@ -18,8 +18,6 @@ export default function Home () {
                             Login
                         </MyButton>
                     </Link>
-
-                    
                 </Col>
             </Row>
         </Container>

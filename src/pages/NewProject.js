@@ -1,46 +1,87 @@
-import { useRef, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
+import { useInput } from '../hooks/input-hook';
 import { Container, Form, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { createProject } from '../redux/slices/projectSlice';
 import { RotateLoader } from 'react-spinners';
-import { useNavigate } from 'react-router-dom';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { useNavigate, useParams } from 'react-router-dom';
+import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import Loader from '../components/Loader';
 
 export default function NewProject() {
 
-    const projectTitle = useRef();
-    const [isPrivate, setPrivate] = useReducer(oldVal => !oldVal, false);
-    const status = useSelector(state => state.projects.status);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
-    const dispatch = useDispatch();
+    const [titleInput, setTitle] = useInput("");
+    const [visibility, setVisibility] = useState('private');
+
     const navigate = useNavigate();
+    const params = useParams();
+    const projectId = params.projectId;
 
-    const redirect = (projectID) => {
-        navigate(`/projects/${projectID}`);
-    }
+    useEffect(() => {
+        if(projectId){
+            setLoading(true);
+
+            const docRef = doc(db, "projects", projectId);
+
+            const fetchProject = async () => {
+                const docSnap = await getDoc(docRef);
+                if(docSnap.exists()){
+                    const project = docSnap.data();
+                    console.log(project);
+                    setTitle(project.title);
+                    setVisibility(project.visibility);
+                }
+                setLoading(false);
+            }
+
+            fetchProject();
+        }
+    }, []);
+
+    if(loading) return <Loader />
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
 
-        dispatch(createProject({
-            title: projectTitle.current.value,
-            isPrivate
-        }))
-            .then(unwrapResult)
-            .then(project => {
-                redirect(project.id);
-            });
+        setLoading(true);
+
+        const newProject = {
+            title: titleInput.value,
+            visibility,
+            timestamp: serverTimestamp()
+        }
+        
+        //create or overwrite project
+        if(projectId){
+            const docRef = doc(db, "projects", projectId);
+
+            updateDoc(docRef, newProject)
+            .then(() => navigate(`/projects/${projectId}/upload`))
+            .catch(setError);
+        }else {
+            addDoc(collection(db, 'projects'), {
+                ...newProject,
+                user: auth.currentUser.uid
+            })
+            .then((ref) => navigate(`/projects/${ref.id}/upload`))
+            .catch(setError);
+        }        
     }    
 
     return (
         <Container>
-            <h1 className="my-4">New Project</h1>
+            <h1 className="my-4">
+                {projectId && 
+                    "Edit Project" || "Create Project"
+                }
+            </h1>
             <div>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Project title</Form.Label>
                         <Form.Control
-                            ref={projectTitle}
+                            {...titleInput}
                             className="px-3 py-3"
                             type="text" 
                             placeholder="Project title"
@@ -51,24 +92,27 @@ export default function NewProject() {
                         <Form.Check 
                             type="switch"
                             id="custom-switch"
-                            label="Private. Only you and persons with link can view this project."
+                            label={visibility == 'public' ? 
+                                "Public. Anyone can view this project" : 
+                                "Private. Only you can view this project" }
                             className="small"
-                            checked={isPrivate}
-                            onChange={setPrivate}
+                            checked={visibility == 'public'}
+                            onChange={(e) => {
+                                if(e.target.checked)
+                                    setVisibility('public')
+                                else
+                                    setVisibility('private')
+                            }}
                         />
                     </Form.Group>
-                    {status === "loading" && 
-                        <div className="text-center">
-                            <RotateLoader />
-                        </div>
-                    }
                     <Button
                         variant="primary"
                         className="py-3 w-100 mb-3"
                         type="submit"
-                        disabled={status === "loading" ? true : false}
                     >
-                        Create project
+                        {projectId && 
+                            "Save & Next" || "Create project"
+                        }
                     </Button>
                 </Form>
             </div>
