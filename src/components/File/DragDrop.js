@@ -1,6 +1,6 @@
 import { getStorage, ref } from 'firebase/storage';
 import { useRef, useReducer } from 'react';
-import { BsUpload } from 'react-icons/bs';
+import { BsCloudUpload } from 'react-icons/bs';
 import styles from './FileUpload.module.css';
 
 export default function DragDrop ({ handleDrop = f => f }) {
@@ -37,7 +37,6 @@ export default function DragDrop ({ handleDrop = f => f }) {
     }
 
     return (
-        <>
         <div 
             className={styles.dragdrop}
             ref={dropzone} 
@@ -48,8 +47,8 @@ export default function DragDrop ({ handleDrop = f => f }) {
             onDragOver={(e) => e.preventDefault()}
         >           
             <div className='content text-center p-5' style={{pointerEvents: 'none'}} >
-                <h5>Drop files here or click to upload</h5>
-                <BsUpload size={30}/>
+                <BsCloudUpload size={50} color="var(--primary)"/>
+                <p className="mt-2">Drop files here or click to upload</p>
                 <input 
                     ref={inpFile} 
                     id='select-file' 
@@ -60,14 +59,5 @@ export default function DragDrop ({ handleDrop = f => f }) {
                 ></input>                 
             </div>
         </div>
-        
-          {/* <div className='uploaded-files'>
-              <ul>
-                  {files.map((file, i) => {
-                      return <li key={i}>"File"</li>
-                  })}
-              </ul>
-          </div> */}
-        </>
     )
 }

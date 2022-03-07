@@ -10,7 +10,7 @@ import { useUsersContext } from '../contexts/UserContext';
 
 export default function Signup() {
 
-  const { user: loggedInUser, loading, error, createUserWithEmail } = useUsersContext();
+  const { loggedInUser, loading, error, createUserWithEmail } = useUsersContext();
 
   const usernameRef = useRef();
   const nameRef = useRef();
@@ -33,7 +33,7 @@ export default function Signup() {
 
   return (
     <Container className={styles.background}>
-      <Row className="justify-content-center">
+      <Row className="justify-content-center h-100 align-items-center">
         <Col xl={4} sm={12} md={8}>
           <h1 className="my-5">Sign up</h1>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -71,11 +71,9 @@ export default function Signup() {
               disabled={loading}
             >
               {loading && 
-                <div className="text-center">
                   <BeatLoader color="#373A74" />
-                </div>
-
-                || "Sign up"
+                || 
+                  "Sign up"
               }
             </Button>
           </Form>

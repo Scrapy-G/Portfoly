@@ -1,4 +1,4 @@
-import { Button, Container } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { ProjectFile } from "../../../components/File/FileUpload";
 import { getDownloadURL } from "firebase/storage";
 import { storage } from '../../../firebase';
@@ -20,7 +20,7 @@ export default function FileList ({ files, name }) {
         return (
             <Button 
                 variant="secondary"
-                className="w-100 py-3 my-1"
+                className="w-100 stroke large my-1"
                 onClick={() => handleDownload(fileRef)}
             >
                 <FiDownload size={22} style={{ marginLeft: "-30px", marginRight: "10px"}}/>
@@ -30,26 +30,28 @@ export default function FileList ({ files, name }) {
     }
 
     return (
-        <div className={styles.filesSection}>
-            <Container>
-                <h5>Files <span className={styles.fileName}>{name}</span></h5>
-                {/* ZIP downloads aren't available as yet */}
-                <Button 
-                    disabled
-                    variant="secondary"
-                    className="w-100 py-3 mt-4 mb-1 filled"
-                >
-                    Download all as ZIP (paid)
-                </Button>
-                {
-                    files.map((file, i) => (
-                        <FileDownloadButton 
-                            key={i}
-                            fileRef={file} 
-                        />
-                    ))
-                }
-            </Container>
-        </div>
+        <Container style={{ backgroundColor: "white" }}>
+            <Row className="py-4">
+                <Col>
+                    <h5 className="d-flex mb-4">
+                        Files 
+                        <p
+                            className="font-weight-bold text-capitalize mx-2 my-0" 
+                            style={{ color: "var(--gray-400)" }}
+                        >
+                            {name}
+                        </p>
+                    </h5>
+                    {
+                        files.map((file, i) => (
+                            <FileDownloadButton 
+                                key={i}
+                                fileRef={file} 
+                            />
+                        ))
+                    }
+                </Col>
+            </Row>
+        </Container>
     )
 }

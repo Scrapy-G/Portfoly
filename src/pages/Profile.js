@@ -21,28 +21,35 @@ export default function Profile() {
   const { loggedInUser } = useUsersContext();
   
   useEffect(() => {
-    setLoading(true);
 
-    //fetch user info
-    const fetchUser = async() => {
-      const docRef = doc(db, "users", username);
-      const docSnap = await getDoc(docRef);
+    if(username === loggedInUser?.username){
+      setProfile(loggedInUser);
+    }else {    
+      setLoading(true);
 
-      if (docSnap.exists()) {
-        const data = await docSnap.data();
-        setProfile(data);
+      //fetch user info
+      const fetchUser = async() => {
+        const docRef = doc(db, "users", username);
+        const docSnap = await getDoc(docRef);
 
-      } else {
-        //redirect to user not found
-        console.log("user not found");
-      }
+        if (docSnap.exists()) {
+          const data = await docSnap.data();
+          setProfile(data);
 
-      setLoading(false);
-    } 
-    
-    fetchUser();
+        } else {
+          //redirect to user not found
+          console.log("user not found");
+        }
+
+        setLoading(false);
+      } 
+      
+      fetchUser();
+    }
 
   }, [username]);
+
+  console.log(currentProfile);
 
   if(loading)
     return <Loader />
@@ -52,13 +59,12 @@ export default function Profile() {
 
   return(
     <div>
-      <Header />
       <Container>
         <Row>
           <Col sm={12} lg={3} className="text-center py-5">
             <div className={styles.profileImage}>
-              {currentProfile?.imgUrl && 
-                <img src={profile} />
+              {currentProfile?.photoUrl && 
+                <img src={currentProfile?.photoUrl} />
                 ||
                 <BsPerson size={40} />
               }
@@ -71,7 +77,7 @@ export default function Profile() {
             </h5>
 
               { currentProfile.id === loggedInUser?.id &&
-                <Link to="/edit-profile">
+                <Link to="edit">
                   <Button variant="secondary" className="small stroke my-4">
                     Edit profile
                   </Button>
@@ -86,9 +92,9 @@ export default function Profile() {
               
           </Col>
           <Col>
-            <Tabs defaultActiveKey="projects">
+            <Tabs defaultActiveKey="projects" className="mt-4">
               <Tab eventKey="projects" title="Projects">
-                <ProjectTab userId={currentProfile.id}/>
+                <ProjectTab />
               </Tab>
               <Tab eventKey="about" title="About" >
                 <div className="p-3" style={{ backgroundColor: "white" }}>

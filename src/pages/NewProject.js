@@ -1,11 +1,13 @@
 import { useEffect, useReducer, useState } from 'react';
 import { useInput } from '../hooks/input-hook';
-import { Container, Form, Button } from 'react-bootstrap';
-import { RotateLoader } from 'react-spinners';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { BeatLoader } from 'react-spinners';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase';
+import { useUsersContext } from '../contexts/UserContext';
 import Loader from '../components/Loader';
+import Header from '../components/Header';
 
 export default function NewProject() {
 
@@ -14,6 +16,7 @@ export default function NewProject() {
 
     const [titleInput, setTitle] = useInput("");
     const [visibility, setVisibility] = useState('private');
+    const { loggedInUser } = useUsersContext();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -29,7 +32,6 @@ export default function NewProject() {
                 const docSnap = await getDoc(docRef);
                 if(docSnap.exists()){
                     const project = docSnap.data();
-                    console.log(project);
                     setTitle(project.title);
                     setVisibility(project.visibility);
                 }
@@ -40,10 +42,9 @@ export default function NewProject() {
         }
     }, []);
 
-    if(loading) return <Loader />
-
     const handleSubmit = async (e) => {
 
+        e.preventDefault();
         setLoading(true);
 
         const newProject = {
@@ -57,65 +58,94 @@ export default function NewProject() {
             const docRef = doc(db, "projects", projectId);
 
             updateDoc(docRef, newProject)
-            .then(() => navigate(`/projects/${projectId}/upload`))
+            .then(() => navigate(`/${loggedInUser.username}/${projectId}`))
             .catch(setError);
         }else {
             addDoc(collection(db, 'projects'), {
                 ...newProject,
-                user: auth.currentUser.uid
+                user: loggedInUser.username
             })
-            .then((ref) => navigate(`/projects/${ref.id}/upload`))
+            .then((ref) => navigate(`/${loggedInUser.username}/${ref.id}`))
             .catch(setError);
         }        
-    }    
+    } 
+    
+    const renderButton = () => {
+
+        return (
+            <Button
+                variant="primary"
+                className="py-3 w-100 mt-3 large"
+                type="submit"
+                disabled={loading}
+            >
+                {
+                    (
+                        loading && 
+                        <BeatLoader color='var(--secondary)'/>
+                    )
+                ||
+                    (
+                        projectId && 
+                        "Save & Next" || 
+                        "Create project"
+                    )
+                 
+                }
+            </Button>
+        )
+    }
 
     return (
         <Container>
-            <h1 className="my-4">
-                {projectId && 
-                    "Edit Project" || "Create Project"
-                }
-            </h1>
-            <div>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Project title</Form.Label>
-                        <Form.Control
-                            {...titleInput}
-                            className="px-3 py-3"
-                            type="text" 
-                            placeholder="Project title"
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mt-4 mb-3">
-                        <Form.Check 
-                            type="switch"
-                            id="custom-switch"
-                            label={visibility == 'public' ? 
-                                "Public. Anyone can view this project" : 
-                                "Private. Only you can view this project" }
-                            className="small"
-                            checked={visibility == 'public'}
-                            onChange={(e) => {
-                                if(e.target.checked)
-                                    setVisibility('public')
-                                else
-                                    setVisibility('private')
-                            }}
-                        />
-                    </Form.Group>
-                    <Button
-                        variant="primary"
-                        className="py-3 w-100 mb-3"
-                        type="submit"
-                    >
+            <Row>
+                <Col sm={12} md={7} lg={5} xl={4}>
+                    <h1 className="my-5">
                         {projectId && 
-                            "Save & Next" || "Create project"
+                            "Edit Project" || "New Project"
                         }
-                    </Button>
-                </Form>
-            </div>
+                    </h1>
+                    <div>
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Group>
+                                <Form.Control
+                                    {...titleInput}
+                                    className="px-3 py-3 mb-3"
+                                    type="text" 
+                                    placeholder="Project title"
+                                    disabled={loading}
+                                    required
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-4">
+                                <Form.Check 
+                                    id="custom-switch"
+                                    label={visibility == 'public' ? 
+                                        "Public. Anyone can view this project" : 
+                                        "Private. Only you can view this project" }
+                                    className="text-muted"
+                                    checked={visibility == 'private'}
+                                    onChange={(e) => {
+                                        if(e.target.checked)
+                                            setVisibility('private')
+                                        else
+                                            setVisibility('public')
+                                    }}
+                                />
+                            </Form.Group>
+                            
+                            {renderButton()}
+                            <Button
+                                variant="secondary"
+                                className="stroke large my-3 w-100"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </Button>
+                        </Form>
+                    </div>
+                </Col>
+            </Row>
         </Container>
     )
 }

@@ -12,6 +12,7 @@ import NewProject from './pages/NewProject';
 import Project from './pages/Project/Project';
 import ManageFiles from './pages/ManageFiles';
 import { useUsersContext } from './contexts/UserContext';
+import Loader from './components/Loader';
 
 
 function App() {
@@ -19,16 +20,9 @@ function App() {
   const FirebaseAuth = ({children, ...rest}) => {
     
     const { loading, status } = useUsersContext();
-
-    if(status === 'initial') {
-      return (
-        <div 
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: "100vh" }}
-        >
-          <RotateLoader/> 
-        </div>
-      );
+  
+    if(status === 'initializing') {
+      return <Loader />
     }
     
     return (
@@ -41,18 +35,17 @@ function App() {
   return (
       <FirebaseAuth>
           <Router>
+            <Header />
             <Routes>
-              {/* <Route path='/' element={<Header/>} /> */}
               <Route path='/' exact element={<Home/>} />
               <Route path='/login' element={<Signin/>} />
               <Route path='/signup' element={<Signup/>} />
-              {/* <Route path='/:user' element={<Header/>} /> */}
               <Route path='/:username' element={<Profile/>} />
-              {/*<Route path='/edit-profile' element={<EditProfile/>} />
+              <Route path='/:username/edit' element={<EditProfile/>} />
               <Route path='/new-project' element={<NewProject/>} />
-              <Route path='/new-project/:projectId' element={<NewProject/>} /> */}
-              <Route path='/:username/:project' element={<Project />} />
-              {/* <Route path='/projects/:projectId/upload' element={<ManageFiles />} /> */}
+              <Route path='/new-project/:projectId' element={<NewProject/>} />
+              <Route path='/:username/:projectId' element={<Project />} />
+              <Route path='/:username/:projectId/upload' element={<ManageFiles />} />
             </Routes>  
           </Router>
       </FirebaseAuth>

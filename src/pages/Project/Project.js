@@ -1,8 +1,10 @@
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Dropdown } from "react-bootstrap";
 import styles from './Project.module.css';
 import { FiDownload, FiShare2 } from 'react-icons/fi'
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import { AiOutlineEdit } from 'react-icons/ai'
+import { IoMdArrowRoundBack } from 'react-icons/ai'
+import { BsThreeDotsVertical, BsImageAlt } from 'react-icons/bs';
+import { BiArrowBack } from 'react-icons/bi';
 import { useEffect, useReducer, useState } from "react";
 import { Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import Loader from "../../components/Loader";
@@ -27,8 +29,8 @@ export default function Project () {
     const params = useParams();
     const navigate = useNavigate();
 
-    const projectId = params.projectId;
-    const projectPath = auth.currentUser.uid + "/" + projectId + "/";
+    const { projectId, username } = params;
+    const projectPath = username + "/" + projectId + "/";
 
     useEffect(() => {
 
@@ -41,7 +43,6 @@ export default function Project () {
                 
                 const listRef = ref(storage, projectPath);
                 const fileRefs = await listAll(listRef)
-                console.log(fileRefs)
                 await parseFiles(fileRefs.items);
             }
 
@@ -68,7 +69,7 @@ export default function Project () {
                         case 'jpeg':
                         case 'png':
                         case 'jpg':
-                            const url =  await getDownloadURL(fileRef);
+                            const url = await getDownloadURL(fileRef);
                             files[group].thumbnail = url;
                             console.log("gotten thumb")
                             break;
@@ -90,37 +91,54 @@ export default function Project () {
         return <Loader/>
 
     return (
-        <div>
+        <>
             <Container>
-                <Row className="mb-5">
-                    <Col>
-                        <h1 className="my-4">{project.title}</h1>
+                <Link to={`/${username}`} className="mt-2 d-block text-decoration-none small">
+                    <BiArrowBack size={20}/>
+                    {username}
+                </Link>
+                <Row className="mt-4 mb-4">
+                    <Col>                        
+                        <h1>{project.title}</h1>
                         <div className={styles.actions}>
-                            <Button variant="primary" className="p-0" disabled>
-                                <FiDownload size={20} color="black"/>
-                            </Button>
                             <button onClick={setShowModal}>
-                                <FiShare2 size={20}/>
+                                <FiShare2 size={25} color="var(--secondary)"/>
                             </button>
-                            <button onClick={() => navigate(`/new-project/${projectId}`)}>
-                                <AiOutlineEdit size={25}/>
-                            </button>
-                            <button className="btn-danger">
-                                <RiDeleteBin6Line size={20}/>
-                            </button>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="none">
+                                    <BsThreeDotsVertical size={30} color="var(--gray-600)"/>
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    <Link to='upload' className="dropdown-item">
+                                        Manage files
+                                    </Link>
+                                    <Dropdown.Divider/>
+                                    <Link to={`/new-project/${projectId}`} className="dropdown-item">
+                                        Edit project
+                                    </Link>
+                                    <Dropdown.Divider/>
+                                    <Link to={`/delete`} className="dropdown-item danger">
+                                        Delete
+                                    </Link>
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </div>
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col sm={12} md={6}>
                         {files && 
                             <>
                                 <div className={styles.preview}>
-                                    <ImageRenderer 
-                                        src={files[selectedFile].thumbnail} 
-                                        height="300px"
-                                        objectFit="contain"
-                                    />
+                                    {files[selectedFile].thumbnail &&
+                                        <img 
+                                            src={files[selectedFile].thumbnail}
+                                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                                        />
+                                        ||
+                                        <BsImageAlt size={50} color="var(--gray-500)"/>
+                                    }
                                 </div>
                                 <FileCarousel 
                                     files={files}
@@ -131,11 +149,12 @@ export default function Project () {
                             </>
                         ||
                             <div className={styles.preview}>
-                                <h5>No files here at the moment</h5>
+                                <BsImageAlt size={50} color="var(--gray-500)"/>
+                                <p className="text-muted my-3">No files here at the moment</p>
                                 <Link to='upload'>
                                     <Button
                                         variant="secondary"
-                                        className="round"
+                                        className="small"
                                         style={{ maxWidth: "150px" }}
                                     >
                                         Add files
@@ -145,12 +164,15 @@ export default function Project () {
                         }
                         
                     </Col>
+                    {files && 
+                        <Col sm={12} md={6} lg={4}>
+                            <FileList name={selectedFile} files={files[selectedFile].files} />
+                        </Col>
+                    } 
                 </Row>
+                           
+                <ShareModal show={showModal} onClose={setShowModal} visibility={project.visibility}/>
             </Container>
-            {files && 
-                <FileList name={selectedFile} files={files[selectedFile].files} />
-            }        
-            <ShareModal show={showModal} onClose={setShowModal} visibility={project.visibility}/>
-        </div>
+        </>
     )
 }

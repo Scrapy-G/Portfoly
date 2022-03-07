@@ -24,21 +24,22 @@ export default function Signin() {
   }
 
   if(loggedInUser)
-    return <Navigate to='/profile' />
+    return <Navigate to={`/${loggedInUser.username}`} />
 
   return (
     <Container className={styles.background}>
-      <Row className="justify-content-center">
-        <Col xl={4} sm={12}>
+      <Row className="justify-content-center h-100 align-items-center">
+        <Col xl={4} lg={6} md={8} sm={12}>
           <h1 className="my-5">Sign In</h1>
           {error && <Alert variant="danger">{error}</Alert>}
-          <Form>
 
+          <Form>
             <Form.Group>
               <Form.Control 
                 ref={emailRef}
                 type="email" 
-                placeholder="Email address" required
+                placeholder="Email address" 
+                required
               />
             </Form.Group>
 
@@ -47,7 +48,8 @@ export default function Signin() {
                 ref={passwordRef}
                 type="password" 
                 className="mb-1"
-                placeholder="Password" required
+                placeholder="Password" 
+                required
               />
               <div className="text-right">
                 <a className="small secondary text-decoration-none">Forgot password?</a>
@@ -68,8 +70,8 @@ export default function Signin() {
                   || "Login"
                 }
             </Button>
-
           </Form>
+
           <p className="text-center small mt-3">
             or sign in with
           </p>

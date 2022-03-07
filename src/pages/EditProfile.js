@@ -1,87 +1,102 @@
-import { Container, Form, Col, Row } from "react-bootstrap";
-import { MyButton } from "../components/buttons/button";
-import cover from '../assets/cover.png';
-import profile from '../assets/profile.png';
-import { useDispatch, useSelector } from "react-redux";
-import { selectUser, updateUserProfile } from "../redux/slices/userSlice";
-import { addDoc, collection, db } from '../firebase';
+import Header from '../components/Header';
+import { Container, Form, Col, Row, Button } from "react-bootstrap";
 import { useRef } from "react";
+import { useUsersContext } from '../contexts/UserContext';
+import { BsPerson } from 'react-icons/bs';
+import styles from './Profile.module.css';
+import { doc, setDoc } from "firebase/firestore";
+import { db } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import { BeatLoader } from 'react-spinners';
+import { useState } from 'react';
 
 export default function EditProfile() {
 
-    const user = useSelector(selectUser);
+    const { loggedInUser, loading, updateUser, updateProfileImage } = useUsersContext();
+    const [uploading, setUploading] = useState(false);
+
     const name = useRef();
     const introduction = useRef();
     const about = useRef();
 
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // addDoc(collection(db, 'users'), {
-        //     name: name.current.value,
-        //     introduction: introduction.current.value,
-        //     about: about.current.value
-        // })
-
-        dispatch(updateUserProfile({
+        const data = {
             name: name.current.value,
-            intro: introduction.current.value,
+            introduction: introduction.current.value,
             about: about.current.value
-        }))
+        }
+
+        await updateUser(data);
+        navigate(-1);
+    }
+
+    const handleImageUpload = (e) => {
+        setUploading(true);
         
+        updateProfileImage(e.target.files[0])
+        .then(() => setUploading(false));
     }
 
     return (
         <>
             <Container>
-                <h1 className="my-4">Edit Profile</h1>
-            </Container>
-            <div>
-                <div className="cover-image">
-                    <img src={cover} />
-                </div>
-                <Container>
-                    <div className="profile-image">
-                        <img src={profile} />
-                    </div>
-                </Container>
-            </div>
-            <Container>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            ref={name}
-                            className="px-3 py-3"
-                            type="text" 
-                            placeholder="Name" required
-                            defaultValue={user}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label className=''>Introduction</Form.Label>
-                        <Form.Control
-                            ref={introduction}
-                            as="textarea"
-                            className="px-3 py-3"
-                            placeholder="Introduction" required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>About</Form.Label>
-                        <Form.Control
-                            ref={about}
-                            as="textarea"
-                            className="px-3 py-3"
-                            placeholder="About" required
-                        />
-                    </Form.Group>
-                    <MyButton type="submit" size="lg" variant="primary" round={false}>
-                        Save
-                    </MyButton>
-                </Form>
+                <Row className="justify-content-center">
+                    <Col sm={12} md={6} lg={4} className="text-center py-5">
+                        <div className={styles.profileImage}>
+                            {(
+                                uploading && <BeatLoader color="var(--secondary)"/>
+                            ) || (
+                                loggedInUser?.photoUrl && <img src={loggedInUser.photoUrl} />
+                                ||
+                                <BsPerson size={40} />
+                            )}
+                        </div>
+                        <label className="btn btn-secondary text-small mb-4 stroke">
+                            Change photo
+                            <input 
+                                type="file" 
+                                style={{ display: "none" }}
+                                onChange={handleImageUpload}
+                            />
+                        </label>
+
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Control
+                                ref={name}
+                                defaultValue={loggedInUser.name}
+                                placeholder="Name"
+                            />
+                            <Form.Control
+                                ref={introduction}
+                                defaultValue={loggedInUser?.introduction}
+                                placeholder="Introduction"
+                            />
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                ref={about}
+                                defaultValue={loggedInUser?.about}
+                                placeholder="About"
+                            />
+
+                            <Button 
+                                variant="primary" 
+                                className="large w-100" 
+                                type="submit"
+                            >
+                                {loading &&
+                                    <BeatLoader color="#373A74" />
+                                ||
+                                    "Save"
+                                }
+                            </Button>
+                        </Form>                      
+                    </Col>
+                </Row>
             </Container>
         </>
     )

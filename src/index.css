@@ -2,7 +2,8 @@
 
 :root {
   --primary: #05F2F2;
-  --primary-dark: #08A0A0;
+  --primary-dark: #02B8B8;
+  --secondary-light: #C2C5FF; 
   --secondary: #686CCA; 
   --secondary-dark: #373A74; 
   --gray-100: #F6F8FB;
@@ -12,6 +13,7 @@
   --gray-500: #88909C;
   --gray-600: #4B5159;
   --gray-700: #1F2328;
+  --danger: #FA3E3E;
 }
 
 * {
@@ -38,13 +40,12 @@ p.small {
 }
 
 a {
-  color: var(--primary-dark);
-  /* text-decoration: none; */
+  color: var(--secondary);
   font-weight: bold;
 }
 
 a:hover {
-  cursor: pointer;
+  color: var(--primary-dark);
 }
 
 a.secondary {
@@ -59,17 +60,20 @@ a.secondary {
 
 /* =========input=========== */
 
-input.form-control {
+input.form-control,
+textarea.form-control {
   margin: 24px 0; 
   padding: 16px 24px;
   border: none;
   border-radius: 10px;
-  box-shadow: -4px -4px 8px white, 2px 2px 2px white, inset 2px 3px 8px #00000010;
-  background-color: #EEF1F5;
+  box-shadow: inset 2px 3px 8px #00000007;
+  background-color: var(--gray-200);
 }
 
 input.form-control:active,
-input.form-control:focus {
+input.form-control:focus,
+textarea.form-control:active,
+textarea.form-control:focus {
   outline: 2px solid var(--primary);
   box-shadow: 4px 4px 12px #00000020, -4px -4px 12px white;
 }
@@ -105,6 +109,7 @@ input.form-control.flat {
 .btn-primary:focus {
   color: var(--gray-700);
   background-color: var(--primary);
+  border: 2px solid var(--primary)
 }
 
 .btn-primary:focus,
@@ -114,6 +119,7 @@ input.form-control.flat {
 
 .btn-secondary{
   color: var(--gray-100);
+  border: 2px solid var(--secondary);
   background-color: var(--secondary);
 }
 
@@ -125,13 +131,13 @@ input.form-control.flat {
 
 .btn-secondary.stroke{
   color: var(--secondary);
-  border: 2px solid var(--secondary);
   background: none;
 }
 
 .btn-secondary.stroke:hover{
   color: var(--gray-100);
-  background: var(--secondary);;
+  background: var(--secondary);
+  border: 2px solid var(--secondary);
 }
 
 .btn.round {
@@ -164,9 +170,83 @@ input.form-control.flat {
   background: none;
 }
 
+/* ========= checkbox ========= */
+
+.form-check-input[type="checkbox"] {
+  height: 20px;
+  width: 20px;
+  border: 2px solid var(--secondary);
+  border-radius: 6px;
+}
+
+.form-check-input[type="checkbox"]:checked {
+  border: 2px solid var(--secondary);
+  background-color: var(--secondary);
+}
+
+.form-check-input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ========= dropdown ========= */
+.dropdown-toggle:after {
+  display: none;
+}
+
+.btn:focus,
+.btn:active {
+  box-shadow: none;
+  outline: none;
+}
+
+.show > .btn {
+  background-color: var(--gray-300);
+}
+
+.dropdown-menu {
+  border-radius: 20px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 3px 3px 10px #00000010;
+}
+
+.dropdown-item,
+.dropdown-item:active {
+  padding: 8px 24px;
+  font-weight: bold;
+  color: var(--gray-600);
+}
+
+.dropdown-item.danger {
+  color: var(--danger);
+}
+
+.dropdown-item:active,
+.dropdown-item:hover {
+  background-color: var(--gray-200);
+}
+
+.form-select {
+  color: var(--secondary-dark);
+  border: 2px solid var(--secondary);
+  text-overflow: ellipsis;
+}
+
+.form-select:focus,
+.form-select:active {
+  outline: none;
+  box-shadow: none;
+  border: 2px solid var(--primary);
+}
+
 /* ========= bootstrap ========= */
 .font-weight-bold {
   font-weight: bold;
+}
+
+.font-weight-normal {
+  font-weight: normal;
 }
 
 /* ========== other styles ============ */

@@ -11,7 +11,14 @@
     border-radius: 8px;
     opacity: 0.6;
     overflow: hidden;
-    background-color: var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gray-300);
+}
+
+.filePreview label:hover {
+    outline: 4px solid var(--gray-300);
 }
 
 .radioInput {
@@ -20,6 +27,6 @@
 
 .radioInput:checked + label{
     opacity: 1;
-    outline: 2px solid var(--primary-dark);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
-}
+}   

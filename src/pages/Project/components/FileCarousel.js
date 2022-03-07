@@ -1,12 +1,8 @@
-import { useEffect, useState } from "react";
-import { auth } from '../../../firebase';
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
+import { BsImageAlt } from 'react-icons/bs';
 import styles from './FileCarousel.module.css';
-import { ImageRenderer } from '../../../components/ImageRenderer';
 
 export default function FileCarousel ({ files, selected, onChange = f => f }) {
 
-    // console.log(files);
     function handleChange(e) {
         onChange(e.target.id);
     }
@@ -24,12 +20,14 @@ export default function FileCarousel ({ files, selected, onChange = f => f }) {
                         onChange={handleChange}
                     />
                     <label htmlFor={groupName}>
-                        {/* {console.log(files[groupName])}
-                        {console.log(files[groupName].thumbnail)} */}
-                        <img 
-                            src={files[groupName].thumbnail}
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
+                        {files[groupName].thumbnail &&
+                            <img 
+                                src={files[groupName].thumbnail}
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                            ||
+                            <BsImageAlt size={50} color="var(--gray-500)"/>
+                        }                        
                     </label>
                 </div>
             ))}

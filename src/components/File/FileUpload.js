@@ -3,24 +3,21 @@ import styles from './FileUpload.module.css'
 import { getStorage, ref, uploadBytesResumable, getMetadata, deleteObject } from 'firebase/storage';
 import { auth } from '../../firebase';
 import { useEffect, useState } from 'react';
+import { IoMdCloseCircle } from 'react-icons/io';
 
 export const FileUpload = ({ file, destination }) => {
 
     // console.log(file);
-
+    const [uploadTask, setUploadTask] = useState();
     const [progress, setProgress] = useState(0);
-    const [error, setError] = useState();
     const [deleted, setDeleted] = useState(false);
 
     const storage = getStorage();
     const fileRef = ref(storage, destination + file.name);
 
-    let uploadTask;
-
     useEffect(() => {
-        uploadTask = uploadBytesResumable(fileRef, file);
-        uploadTask.on('state_changed', snapshot => {
-            console.log("running");
+        const upload = uploadBytesResumable(fileRef, file);
+        upload.on('state_changed', snapshot => {
             const prog = snapshot.bytesTransferred / snapshot.totalBytes * 100;
             setProgress(prog)
         },
@@ -28,50 +25,67 @@ export const FileUpload = ({ file, destination }) => {
             console.log(error.message);
         },
         () => { //success
-            console.log("upload completed");
             setProgress(100)
         });
 
+        setUploadTask(upload);
+
     }, [file, destination]);
 
+    if(deleted)
+        return <></>
+
     const cancelUpload = () => {
-        if(progress != 100)
+        if(progress !== 100)
             uploadTask.cancel();
         else {
-            deleteObject(fileRef).then(() => {
-                setDeleted(true);
-            })
+            deleteObject(fileRef)
         }
+
+        setDeleted(true);
     }
 
     if(deleted) return <></>
 
     return (
         <div className={styles.fileUpload}>
-            <div
-                style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis", maxWidth: "50%"}}
-            >
-                {file.name}
+            <div className={styles.info}>
+                <div className="w-100 d-flex justify-content-between">
+                    <span
+                        style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis", maxWidth: "70%"}}
+                    >
+                        {file.name}
+                    </span>
+                    { progress !== 100 &&
+                        <span className={styles.fileSize}>
+                            {renderFileSize(file.size)}
+                        </span>
+                    }
+                    
+                </div>     
+                {progress === 100 &&
+                    <span className={styles.fileSize}>
+                        {renderFileSize(file.size)}
+                    </span>  
+                    ||
+                    <div className={styles.progressBar}>
+                        <div className={styles.fill} style={{ width: `${progress}%` }}></div>
+                    </div>
+                }
+                
             </div>
-            <div className={styles.fileSize}>
-                {renderFileSize(file.size)}
-            </div>
-            <GrClose 
+            
+            <IoMdCloseCircle 
                 style={{ cursor: "pointer" }}
-                size={20} 
+                size={24} 
+                color="var(--gray-400)"
                 onClick={cancelUpload}
             />
-            <div 
-                className={styles.progressBar} 
-                style={{ width: `${progress}%`, backgroundColor: progress == 100 ? "var(--primary-dark)" : "var(--gray-700)"}}
-            ></div>
         </div>
     )
 }
 
 export const ProjectFile = ({ fileRef, onDelete = f => f }) => {
-
-    // console.log(fileRef);
 
     const [fileName, setFileName] = useState();
     const [fileSize, setFileSize] = useState();
@@ -88,9 +102,9 @@ export const ProjectFile = ({ fileRef, onDelete = f => f }) => {
     }, [fileRef])
 
     const handleDelete = () => {
-        deleteObject(fileRef).then(() => {
-            setDeleted(true);
-        })
+        deleteObject(fileRef);
+        setDeleted(true);
+        
     }
 
     if(loading)
@@ -100,17 +114,21 @@ export const ProjectFile = ({ fileRef, onDelete = f => f }) => {
 
     return (
         <div className={styles.fileUpload}>
-            <div
-                style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis", maxWidth: "50%"}}
-            >
-                {fileName}
+            <div className={styles.info}>
+                <div
+                    style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis", maxWidth: "80%"}}
+                >
+                    {fileName}
+                </div>
+                <div className={styles.fileSize}>
+                    {renderFileSize(fileSize)}
+                </div>
             </div>
-            <div className={styles.fileSize}>
-                {renderFileSize(fileSize)}
-            </div>
-            <GrClose 
+            
+            <IoMdCloseCircle 
                 style={{ cursor: "pointer" }}
-                size={20} 
+                size={24} 
+                color="var(--gray-400)"
                 onClick={handleDelete}
             />
         </div>
