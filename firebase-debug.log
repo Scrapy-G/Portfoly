@@ -1,0 +1,21 @@
+[debug] [2022-03-17T12:19:57.414Z] ----------------------------------------------------------------------
+[debug] [2022-03-17T12:19:57.416Z] Command:       /home/chad/.nvm/versions/node/v16.11.1/bin/node /home/chad/.nvm/versions/node/v16.11.1/bin/firebase init
+[debug] [2022-03-17T12:19:57.416Z] CLI Version:   10.3.1
+[debug] [2022-03-17T12:19:57.416Z] Platform:      linux
+[debug] [2022-03-17T12:19:57.416Z] Node Version:  v16.11.1
+[debug] [2022-03-17T12:19:57.417Z] Time:          Thu Mar 17 2022 07:19:57 GMT-0500 (Eastern Standard Time)
+[debug] [2022-03-17T12:19:57.417Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-03-17T12:19:57.421Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-03-17T12:19:57.421Z] > authorizing via signed-in user (98scrapyg@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/chad/Desktop/react/portfoly
+

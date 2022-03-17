@@ -14,14 +14,11 @@ export default function DragDrop ({ handleDrop = f => f }) {
 
     const onDragOver = (e) => {
         e.stopPropagation();
-        console.log("enter");
         dropzone.current.classList.add("active");
-        console.log(dropzone.current.classList);
     }
 
     const onDragLeave = (e) => {
         e.stopPropagation();
-        console.log("leave");
         dropzone.current.classList.remove("active");
     }
 

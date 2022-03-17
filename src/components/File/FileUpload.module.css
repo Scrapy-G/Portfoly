@@ -67,8 +67,9 @@
 /* =========== file upload ================= */
 
 .fileLoading {
-    background-color: #dfdfdf;
+    background-color: var(--gray-100);
     position: relative;
+    overflow: hidden
 }
 
 .fileLoading::before{

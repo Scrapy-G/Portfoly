@@ -23,7 +23,7 @@
 body {
   font-family: Inter, 'sans-serif';
   color: var(--gray-700);
-  background-color: var(--gray-100);
+  background-color: white;
 }
 
 h1,
@@ -150,7 +150,7 @@ input.form-control.flat {
 
 .nav-tabs .nav-link {
   font-family: Inter, 'sans-serif';
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   border: none;
   color: var(--gray-400);
@@ -164,9 +164,9 @@ input.form-control.flat {
 }
 
 .nav-tabs .nav-link.active {
-  color: var(--secondary);
+  color: var(--gray-600);
   border: none;
-  border-bottom: 4px solid var(--secondary);
+  border-bottom: 3px solid var(--gray-600);
   background: none;
 }
 
@@ -249,8 +249,39 @@ input.form-control.flat {
   font-weight: normal;
 }
 
+.toast-container {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 50px;
+}
+
+.toast.success {
+  color: rgb(41, 148, 41);
+}
+
+.toast-body {
+  font-size: 16px;
+}
 /* ========== other styles ============ */
 .about-text {
   font-size: 18px;
   color: var(--gray-600);
+}
+
+.text-large {
+  font-size: 300%;
+  font-weight: bold;
+  color: var(--gray-400);
+  letter-spacing: .2em;
+}
+
+.round {
+  border-radius: 300px;
+}
+
+.modal-content {
+  border-radius: 20px;
+  overflow: hidden;
 }

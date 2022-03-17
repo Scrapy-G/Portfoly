@@ -1,13 +1,11 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useInput } from '../hooks/input-hook';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { BeatLoader } from 'react-spinners';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db } from '../firebase';
 import { useUsersContext } from '../contexts/UserContext';
-import Loader from '../components/Loader';
-import Header from '../components/Header';
 
 export default function NewProject() {
 
@@ -105,6 +103,11 @@ export default function NewProject() {
                             "Edit Project" || "New Project"
                         }
                     </h1>
+                    {error && 
+                        <div className="alert alert-danger">
+                            {error.message}
+                        </div>
+                    }
                     <div>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>

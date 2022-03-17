@@ -9,12 +9,15 @@ import { useEffect, useReducer, useState } from "react";
 import { Navigate, useNavigate, useParams, Link } from "react-router-dom";
 import Loader from "../../components/Loader";
 import { auth, db, storage } from '../../firebase';
-import { listAll, ref, getDownloadURL } from 'firebase/storage';
-import { doc, getDoc } from 'firebase/firestore';
+import { listAll, ref, getDownloadURL, deleteObject } from 'firebase/storage';
+import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import FileCarousel from "./components/FileCarousel";
 import { ImageRenderer } from "../../components/ImageRenderer";
 import FileList from "./components/FileList";
 import ShareModal from "./components/ShareModal";
+import { useToastContext } from "../../contexts/ToastContext";
+import { useUsersContext } from "../../contexts/UserContext";
+// import Toast from 'react-native-toast-message';
 
 export default function Project () {
 
@@ -24,13 +27,15 @@ export default function Project () {
     const [showModal, setShowModal] = useReducer(old => !old, false);
     
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState();
 
     const params = useParams();
     const navigate = useNavigate();
 
     const { projectId, username } = params;
-    const projectPath = username + "/" + projectId + "/";
+    const { showToastMessage } = useToastContext();
+    const { loggedInUser } = useUsersContext();
+
+    const projectPath = `/users/${username}/projects/${projectId}`;
 
     useEffect(() => {
 
@@ -71,7 +76,6 @@ export default function Project () {
                         case 'jpg':
                             const url = await getDownloadURL(fileRef);
                             files[group].thumbnail = url;
-                            console.log("gotten thumb")
                             break;
                     }
                 }
@@ -83,12 +87,38 @@ export default function Project () {
         }
 
         fetchProject()
-        .catch(e => setError(e.message));
+        .catch(e => {
+            //show toast message
+        });
 
     }, []);
 
     if(loading)
         return <Loader/>
+
+    function deleteProject() {
+        setLoading(true);
+
+        //delete all project files
+        for(let key in files){
+            files[key].files.forEach(fileRef => {
+                deleteObject(fileRef);                
+            })
+        }
+
+        //delete document
+        const docRef = doc(db, "projects", projectId);
+        deleteDoc(docRef)
+        .then(() => {
+            showToastMessage('success', 'Project deleted successfully!');
+            navigate(`/${username}`);
+        })
+        .catch(() => {
+            showToastMessage('error', 'Error occurred. Try again later!');
+            navigate(`/${username}`);
+        })
+        
+    }
 
     return (
         <>
@@ -104,25 +134,28 @@ export default function Project () {
                             <button onClick={setShowModal}>
                                 <FiShare2 size={25} color="var(--secondary)"/>
                             </button>
-                            <Dropdown>
-                                <Dropdown.Toggle variant="none">
-                                    <BsThreeDotsVertical size={30} color="var(--gray-600)"/>
-                                </Dropdown.Toggle>
 
-                                <Dropdown.Menu>
-                                    <Link to='upload' className="dropdown-item">
-                                        Manage files
-                                    </Link>
-                                    <Dropdown.Divider/>
-                                    <Link to={`/new-project/${projectId}`} className="dropdown-item">
-                                        Edit project
-                                    </Link>
-                                    <Dropdown.Divider/>
-                                    <Link to={`/delete`} className="dropdown-item danger">
-                                        Delete
-                                    </Link>
-                                </Dropdown.Menu>
-                            </Dropdown>
+                            {loggedInUser &&
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="none">
+                                        <BsThreeDotsVertical size={30} color="var(--gray-600)"/>
+                                    </Dropdown.Toggle>
+                                    
+                                    <Dropdown.Menu>
+                                        <Link to='upload' className="dropdown-item">
+                                            Manage files
+                                        </Link>
+                                        <Dropdown.Divider/>
+                                        <Link to={`/new-project/${projectId}`} className="dropdown-item">
+                                            Edit project
+                                        </Link>
+                                        <Dropdown.Divider/>
+                                        <Dropdown.Item onClick={deleteProject} className="dropdown-item danger">
+                                            Delete
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            }                            
                         </div>
                     </Col>
                 </Row>

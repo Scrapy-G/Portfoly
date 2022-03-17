@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Tabs, Tab } from 'react-bootstrap';
-import profile from '../assets/profile.png';
 import { Link, useParams } from 'react-router-dom';
-import Header from '../components/Header';
 import { useUsersContext } from '../contexts/UserContext';
 import styles from './Profile.module.css';
 import ProjectTab from './Project/ProjectTab';
@@ -10,15 +8,18 @@ import { db  } from '../firebase';
 import { doc, getDoc } from "firebase/firestore";
 import { BsPerson } from 'react-icons/bs';
 import Loader from '../components/Loader';
+import { useToastContext } from '../contexts/ToastContext';
 
 export default function Profile() {
 
   const [currentProfile, setProfile] = useState();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState();
 
   const params = useParams();
   const { username } = params;
   const { loggedInUser } = useUsersContext();
+  const { showToastMessage } = useToastContext();
   
   useEffect(() => {
 
@@ -38,7 +39,7 @@ export default function Profile() {
 
         } else {
           //redirect to user not found
-          console.log("user not found");
+          setError("User not found");
         }
 
         setLoading(false);
@@ -49,7 +50,8 @@ export default function Profile() {
 
   }, [username]);
 
-  console.log(currentProfile);
+  if(error)
+    return <Container><h1 className="mt-5 alert alert-danger">{error}</h1></Container>
 
   if(loading)
     return <Loader />
@@ -62,6 +64,7 @@ export default function Profile() {
       <Container>
         <Row>
           <Col sm={12} lg={3} className="text-center py-5">
+
             <div className={styles.profileImage}>
               {currentProfile?.photoUrl && 
                 <img src={currentProfile?.photoUrl} />
@@ -83,11 +86,13 @@ export default function Profile() {
                   </Button>
                 </Link>
                 ||
-                <Link to="contact">
-                  <Button variant="primary" className="small my-4">
+                  <Button 
+                    variant="primary" 
+                    className="small my-4"
+                    onClick={() => showToastMessage('failed', 'Feature not available at the moment')}
+                  >
                     Contact
                   </Button>
-                </Link>
               }
               
           </Col>

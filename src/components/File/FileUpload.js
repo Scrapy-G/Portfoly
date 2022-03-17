@@ -5,24 +5,27 @@ import { auth } from '../../firebase';
 import { useEffect, useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
 
-export const FileUpload = ({ file, destination }) => {
+export const FileUpload = ({ file, destination, onComplete }) => {
 
     // console.log(file);
     const [uploadTask, setUploadTask] = useState();
     const [progress, setProgress] = useState(0);
     const [deleted, setDeleted] = useState(false);
+    const [error, setError] = useState();
 
     const storage = getStorage();
     const fileRef = ref(storage, destination + file.name);
-
     useEffect(() => {
         const upload = uploadBytesResumable(fileRef, file);
         upload.on('state_changed', snapshot => {
             const prog = snapshot.bytesTransferred / snapshot.totalBytes * 100;
             setProgress(prog)
+            if(prog === 100){
+                onComplete(fileRef);
+            }
         },
         error => {
-            console.log(error.message);
+            setError(error.message);
         },
         () => { //success
             setProgress(100)
@@ -56,22 +59,18 @@ export const FileUpload = ({ file, destination }) => {
                     >
                         {file.name}
                     </span>
-                    { progress !== 100 &&
-                        <span className={styles.fileSize}>
-                            {renderFileSize(file.size)}
-                        </span>
-                    }
-                    
-                </div>     
-                {progress === 100 &&
                     <span className={styles.fileSize}>
                         {renderFileSize(file.size)}
-                    </span>  
-                    ||
+                    </span>
+                    
+                </div> 
+                {error && 
+                    <div className="small text-danger">Something went wrong.</div>
+                    || 
                     <div className={styles.progressBar}>
                         <div className={styles.fill} style={{ width: `${progress}%` }}></div>
                     </div>
-                }
+                }                
                 
             </div>
             
@@ -87,30 +86,23 @@ export const FileUpload = ({ file, destination }) => {
 
 export const ProjectFile = ({ fileRef, onDelete = f => f }) => {
 
-    const [fileName, setFileName] = useState();
     const [fileSize, setFileSize] = useState();
     const [loading, setLoading] = useState(true);
-    const [deleted, setDeleted] = useState(false);
 
     useEffect(() => {
         getMetadata(fileRef)
             .then(res => {
-                setFileName(res.name);
                 setFileSize(res.size);
                 setLoading(false);
             })
     }, [fileRef])
 
     const handleDelete = () => {
-        deleteObject(fileRef);
-        setDeleted(true);
-        
+        onDelete(fileRef);       
     }
 
     if(loading)
         return renderLoadingFallBack();
-
-    if(deleted) return <></>
 
     return (
         <div className={styles.fileUpload}>
@@ -118,7 +110,7 @@ export const ProjectFile = ({ fileRef, onDelete = f => f }) => {
                 <div
                     style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis", maxWidth: "80%"}}
                 >
-                    {fileName}
+                    {fileRef.name}
                 </div>
                 <div className={styles.fileSize}>
                     {renderFileSize(fileSize)}

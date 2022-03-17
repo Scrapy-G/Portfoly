@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, addDoc, collection, db,  authStateChanged, storage  } from '../firebase';
+import { auth, collection, db,  authStateChanged, storage  } from '../firebase';
 import { doc, getDoc, getDocs, limit, query, setDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
@@ -36,6 +36,7 @@ export default function UserProvider({ children }) {
 
     const signInWithEmail = ({ email, password }) => {
         setLoading(true);
+        setError(false);
 
         signInWithEmailAndPassword(auth, email, password)
         .then(() => fetchUser(auth.currentUser.uid))
@@ -45,11 +46,13 @@ export default function UserProvider({ children }) {
             setLoading(false);
             setError(e.message);
         });
+
     }
 
     const createUserWithEmail = async ({ username, name, email, password }) => {
 
         setLoading(true);
+        setError(false);
 
         //check if username is already taken
         const docRef = doc(db, "users", username);
@@ -67,7 +70,8 @@ export default function UserProvider({ children }) {
                     name
                 })
             })
-            .then(() => setUser({username, id: auth.currentUser.uid}))
+            .then(() => updateProfile(auth.currentUser, {displayName: username}))
+            .then(() => setUser({username, id: auth.currentUser.uid, name}))
             .then(() => setLoading(false))
             .catch(e => {
                 setLoading(false);
@@ -118,7 +122,7 @@ export default function UserProvider({ children }) {
             //TODO: do some validation here
 
             const imageType = img.type.split("/")[1];
-            const profileImgRef = ref(storage, `${loggedInUser.username}/profile.${imageType}`);
+            const profileImgRef = ref(storage, `/users/${loggedInUser.username}/profile.${imageType}`);
             
             const snapshot = await uploadBytes(profileImgRef, img);
             const url = await getDownloadURL(snapshot.ref);

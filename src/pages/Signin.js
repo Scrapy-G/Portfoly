@@ -2,8 +2,6 @@ import { useRef } from 'react';
 import { Container, Col, Row, Button, Form, Alert } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
-import { BsTwitter, BsGoogle } from 'react-icons/bs';
-import { RiInstagramFill } from 'react-icons/ri';
 import styles from './Background.module.css';
 import { useUsersContext } from '../contexts/UserContext';
 
@@ -28,7 +26,7 @@ export default function Signin() {
 
   return (
     <Container className={styles.background}>
-      <Row className="justify-content-center h-100 align-items-center">
+      <Row className="justify-content-center h-50 align-items-center">
         <Col xl={4} lg={6} md={8} sm={12}>
           <h1 className="my-5">Sign In</h1>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -52,7 +50,7 @@ export default function Signin() {
                 required
               />
               <div className="text-right">
-                <a className="small secondary text-decoration-none">Forgot password?</a>
+                <Link to='/password-reset' className="small secondary text-decoration-none">Forgot password?</Link>
               </div>
             </Form.Group>
 
@@ -72,7 +70,7 @@ export default function Signin() {
             </Button>
           </Form>
 
-          <p className="text-center small mt-3">
+          {/* <p className="text-center small mt-3">
             or sign in with
           </p>
           <div className="mb-5 text-center">
@@ -85,9 +83,9 @@ export default function Signin() {
             <Button variant="secondary round mx-2">
                 <RiInstagramFill size={25}/>
             </Button>
-          </div>
+          </div> */}
 
-          <p className="text-center">
+          <p className="text-center mt-2">
             Not a member? <Link to='/signup'>Sign up</Link>
           </p>
           

@@ -3,8 +3,6 @@ import { useRef } from 'react';
 import { Col, Row, Button, Form, Alert, Container } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
-import { BsTwitter, BsGoogle } from 'react-icons/bs';
-import { RiInstagramFill } from 'react-icons/ri';
 import styles from './Background.module.css';
 import { useUsersContext } from '../contexts/UserContext';
 
@@ -21,7 +19,7 @@ export default function Signup() {
     e.preventDefault();
 
     createUserWithEmail({
-      username: usernameRef.current.value,
+      username: usernameRef.current.value.toLowerCase(),
       name: nameRef.current.value,
       email: emailRef.current.value,
       password: passwordRef.current.value
@@ -33,7 +31,7 @@ export default function Signup() {
 
   return (
     <Container className={styles.background}>
-      <Row className="justify-content-center h-100 align-items-center">
+      <Row className="justify-content-center h-5 align-items-center">
         <Col xl={4} sm={12} md={8}>
           <h1 className="my-5">Sign up</h1>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -78,7 +76,7 @@ export default function Signup() {
             </Button>
           </Form>
 
-          <p className="text-center small mt-3">
+          {/* <p className="text-center small mt-3">
             or sign up with
           </p>
           <div className="mb-5 text-center">
@@ -91,9 +89,9 @@ export default function Signup() {
             <Button variant="secondary round mx-2">
                 <RiInstagramFill size={25}/>
             </Button>
-          </div>
+          </div> */}
 
-          <p className="text-center">
+          <p className="text-center mt-2">
             Already a member? <Link to='/login'>Sign in</Link>
           </p>
 

@@ -1,6 +1,8 @@
 .fileCarousel {
     display: flex;
     margin: 16px 0;
+    overflow-x: scroll;
+    padding: 10px;
 }
 
 .filePreview label {

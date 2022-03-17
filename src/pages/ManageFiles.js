@@ -1,25 +1,23 @@
-import { Container, Button, Row, Col, Dropdown, Form } from "react-bootstrap";
+import { Container, Button, Row, Col, Form } from "react-bootstrap";
 import DragDrop from '../components/File/DragDrop';
 import { FileUpload, ProjectFile } from "../components/File/FileUpload";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { auth } from '../firebase';
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
-import Header from '../components/Header';
+import { getStorage, ref, listAll, getDownloadURL, deleteObject } from 'firebase/storage';
 import { useUsersContext } from "../contexts/UserContext";
-import { doc, getDoc, getDocs, limit, query, setDoc, where } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from '../firebase';
 
 export default function ManageFiles () {
 
-    const [newFiles, addFiles ] = useReducer((oldFiles, newFile) =>[...oldFiles, ...newFile], []);
+    const [uploadFiles, setUploadFiles ] = useState([]);
     const [projectFiles, setProjectFiles] = useState([]);
     const { loggedInUser } = useUsersContext();
 
     const params = useParams();
     const storage = getStorage();
     const projectId = params.projectId;
-    const projectPath = loggedInUser.username + "/" + projectId + "/";
+    const projectPath = `/users/${loggedInUser.username}/projects/${projectId}/`;
 
     useEffect(() => {
         const listRef = ref(storage, projectPath);
@@ -34,6 +32,8 @@ export default function ManageFiles () {
         //TODO: read current cover from project
         //and set as default selected 
 
+        //TODO: add newFiles to project Files after upload
+
         const projectRef = doc(db, 'projects', projectId);
         const ext = ["jpg", "jpeg", "png"];
 
@@ -47,7 +47,7 @@ export default function ManageFiles () {
             setDoc(projectRef, {coverUrl: imgUrl}, { merge: true });
         }
 
-        function handleChange(e) {            
+        function handleCoverChange(e) {            
             if(e.target.value === "") 
                 return;
 
@@ -60,8 +60,8 @@ export default function ManageFiles () {
                 <p className="text-muted mb-1">
                     Change cover image
                 </p>
-                <Form.Select onChange={handleChange} className="p-3">
-                    <option selected value="">Select image</option>
+                <Form.Select onChange={handleCoverChange} className="p-3">
+                    <option value="">Select image</option>
                     {images.map((file, i) => (
                         <option key={i} value={i}>{file.name}</option>
                     ))}
@@ -70,18 +70,35 @@ export default function ManageFiles () {
         );
     }
 
+    function onFileUploadComplete(fileRef) {
+        setProjectFiles([...projectFiles, fileRef]);
+        // //remove file from upload
+        setUploadFiles(uploadFiles.filter(item => (
+            item.name !== fileRef.name
+        )));      
+    }
+    
+    function deleteFile(fileRef) {
+        deleteObject(fileRef);
+        setProjectFiles(projectFiles.filter(item => (
+            item.name !== fileRef.name
+        )));
+    }
+
     return (
         <>
             <Container>
                 <h1 className="my-5">Manage files</h1>
-                <Row>
+                <Row className="pb-5">
                     <Col xs={12} md={6} className="mb-5">                        
-                        <DragDrop handleDrop={addFiles}/>
+                        <DragDrop handleDrop={file => {
+                            setUploadFiles([...uploadFiles, ...file])
+                        }}/>
                     </Col>
                     <Col sm={12} md={5}>
                         <CoverImageSelect />
 
-                        <div className="mt-4">
+                        <div className="my-4">
                             <p className="text-muted mb-1">
                                 Files
                             </p>
@@ -89,20 +106,23 @@ export default function ManageFiles () {
                                 <ProjectFile 
                                     key={i}
                                     fileRef={fileRef} 
+                                    onDelete={deleteFile}
                                 />
                             ))}
-                            {newFiles.map((file, i) => (
+                            {uploadFiles.map((file, i) => (
                                 <FileUpload 
                                     key={i}
+                                    index={i}
                                     file={file} 
                                     destination={projectPath}
+                                    onComplete={(fileRef) => onFileUploadComplete(fileRef)}
                                 />
                             ))}
                         </div>
 
                         <Link to={`/${loggedInUser.username}/${projectId}`}>
                             <Button variant="primary" className="w-100 large">
-                                Save & View
+                                View project
                             </Button>
                         </Link>
                     </Col>

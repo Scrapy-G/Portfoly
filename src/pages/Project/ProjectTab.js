@@ -68,7 +68,7 @@ export default function ProjectTab() {
                                 }                                
                             </div>
                         </Link>
-                        <p className="text-muted mb-0 text-capitalize">{project.title}</p>
+                        <p className="text-muted mb-0 mt-1 text-capitalize">{project.title}</p>
                     </Col>
                 ))}
             </Row>
@@ -79,7 +79,7 @@ export default function ProjectTab() {
         <div className="p-3" style={{ backgroundColor: "white" }}>
             {loggedInUser?.username === username &&
                 <Row>
-                    <Col sm={8} xs={12} md={4}>
+                    <Col sm={8} xs={12} md={5} lg={4}>
                         <Link to='/new-project'>
                             <Button variant="primary" className="large w-100 px-5 my-3">
                                 <GrAddCircle size={22} className="mx-1"/>

@@ -1,11 +1,8 @@
-import Header from '../components/Header';
 import { Container, Form, Col, Row, Button } from "react-bootstrap";
 import { useRef } from "react";
 import { useUsersContext } from '../contexts/UserContext';
 import { BsPerson } from 'react-icons/bs';
 import styles from './Profile.module.css';
-import { doc, setDoc } from "firebase/firestore";
-import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { BeatLoader } from 'react-spinners';
 import { useState } from 'react';
@@ -77,7 +74,7 @@ export default function EditProfile() {
                             />
                             <Form.Control
                                 as="textarea"
-                                rows={3}
+                                rows={5}
                                 ref={about}
                                 defaultValue={loggedInUser?.about}
                                 placeholder="About"
@@ -93,6 +90,13 @@ export default function EditProfile() {
                                 ||
                                     "Save"
                                 }
+                            </Button>
+                            <Button 
+                                variant="secondary" 
+                                className=" mt-3 large w-100 stroke " 
+                                onClick={() => navigate(-1)}                                
+                            >
+                                Cancel
                             </Button>
                         </Form>                      
                     </Col>
